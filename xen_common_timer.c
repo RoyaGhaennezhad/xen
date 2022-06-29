@@ -5,15 +5,36 @@
  *
  * This functions has been defined:
  *
- * -down_heap
- * -up_heap
- * -remove_from_heap
- * -add_to_heap
- * -remove_entry
- * -add_entry
- * -activate_timer
- * -deactivate_timer
- * -timer_lock
+ * - Sink down element pos of heap
+ * - Float element pos up heap
+ * - Remove timer from heap
+ * - Add new entry t to heap
+ * - Remove timer from list
+ * - Add timer to list
+ * - Remove timer from heap or list according to it's status
+ * - Add timer to heap or list
+ * - Acctivate timer
+ * - Deacctivate timer
+ * - Lock timer
+ * - Lock timer and saving IRQ flags
+ * - Unlock timer
+ * - Unlock timer and restoring IRQ flags
+ * - Acctive timer
+ * - Initialise a timer structure with an initial callback CPU
+ * - Set the expiry time and activate a timer
+ * - Deactivate a timer this function has no effect if the timer is not currently active
+ * - Active timer & check it's expires is less than t
+ * - Migrate a timer to a different CPU
+ * - Deactivate a timer and prevent it from being re-set
+ * - Execute timers from timer list of one cpu
+ * - Check heap overflow, Execute timers, move timers from linked list to heap
+ * - Calculate the aligned first tick time for a given periodic timer
+ * - Dump timer
+ * - Dump timer queues
+ * - Migrate timers for dead or removed cpu to a online one
+ * - Free heap of each cpu timers
+ * - cpu callback
+ * - Bootstrap initialisation
  *
  * @version 0.1
  * @date 2021-28-06
@@ -364,7 +385,7 @@ static inline bool_t timer_lock(struct timer *timer)
 }
 
 /**
- * @brief  Lock timer and saving IRQ flags.
+ * @brief  Lock timer.
  *
  * @param[in] t: pointer to timer structure
  * @param[out] flags: pointer to timer structure
@@ -418,8 +439,8 @@ static bool_t active_timer(struct timer *timer)
 }
 
 /**
- * @brief  Initialise a timer structure with an initial callback CPU, callback
- *        function and callback data pointer. This function must only be called on
+ * @brief  Initialise a timer structure with an initial callback CPU,
+ *        callback function and callback data pointer. This function must only be called on
  *        a brand new timer, or a killed timer. It must *never* execute concurrently
  *        with any other operation on the same timer
  *
