@@ -35,9 +35,9 @@
 
 
 const unsigned short int __mon_lengths[2][12] = {       ///<How many days are in each month for Normal and leap years
-    
+
     {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},   ///<Normal years
-    
+
     {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}    ///<Leap years
 };
 
@@ -64,7 +64,7 @@ struct tm gmtime(unsigned long t)
     const unsigned short int *ip;
 
     y = 1970;
-    
+
 /**
  * - Allow the concept of time before 1970.  64-bit only; for 32-bit
  *  time after 2038 seems more important than time before 1970.
@@ -131,7 +131,7 @@ void update_domain_wallclock_time(struct domain *d)
     sec = wc_sec + d->time_offset_seconds;
     shared_info(d, wc_sec)    = sec;
     shared_info(d, wc_nsec)   = wc_nsec;
-    
+
 #ifdef CONFIG_X86
     if ( likely(!has_32bit_shinfo(d)) )
         d->shared_info->native.wc_sec_hi = sec >> 32;
@@ -239,6 +239,6 @@ struct tm wallclock_time(uint64_t *ns)
 
     if ( ns )
         *ns = nsec;
-    
+
     return gmtime(seconds);
 }
