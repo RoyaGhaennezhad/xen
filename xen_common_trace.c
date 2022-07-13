@@ -13,36 +13,31 @@
   *
   * This functions has been defined:
   *
-  * - Sink down element pos of heap
-  * - Float element pos up heap
-  * - Remove timer from heap
-  * - Add new entry t to heap
-  * - Remove timer from list
-  * - Add timer to list
-  * - Remove timer from heap or list according to it's status
-  * - Add timer to heap or list
-  * - Acctivate timer
-  * - Deacctivate timer
-  * - Lock timer
-  * - Lock timer and saving IRQ flags
-  * - Unlock timer
-  * - Unlock timer and restoring IRQ flags
-  * - Acctive timer
-  * - Initialise a timer structure with an initial callback CPU
-  * - Set the expiry time and activate a timer
-  * - Deactivate a timer this function has no effect if the timer is not currently active
-  * - Active timer & check it's expires is less than t
-  * - Migrate a timer to a different CPU
-  * - Deactivate a timer and prevent it from being re-set
-  * - Execute timers from timer list of one cpu
-  * - Check heap overflow, Execute timers, move timers from linked list to heap
-  * - Calculate the aligned first tick time for a given periodic timer
-  * - Dump timer
-  * - Dump timer queues
-  * - Migrate timers for dead or removed cpu to a online one
-  * - Free heap of each cpu timers
-  * - cpu callback
-  * - Bootstrap initialisation
+  * - chain locks the cpu that wants to be traced
+  * - calculate trace info first offset
+  * - check to make sure that the proposed size will fit
+  *    in the currently sized struct t_info and allows prod and cons to
+  *    reach double the value without overflow.
+  * - performs initialization of the per-cpu trace buffers
+  * - handle the logic involved with dynamically allocating tbufs
+  * - check trace buffer initialisation next check event is enable then match
+  *    class and subclasses
+  * - performs initialization of the per-cpu trace buffers.
+  * - sysctl operations on trace buffers.
+  * - calculate record size based on input parameters
+  * - check prod & cons
+  * - calculate unconsumes bytes in trace buffer
+  * - calculate trace buffer bytes to wrap
+  * - calculate available bytes in trace bufferr
+  * - riching next page record in trace buffer
+  * - insert record to trace buffer
+  * - insert wrap record
+  * - insert lost records
+  * - Notification is performed in qtasklet to avoid deadlocks with contexts
+  *    which __trace_var() may be called from (e.g., scheduler critical regions).
+  * - Enters a trace tuple into the trace buffer for the current CPU
+  * - Notification is performed in qtasklet to avoid deadlocks with contexts
+  *    which __trace_var() may be called from (e.g., scheduler critical regions).
   *
   * @version 0.1
   * @date 2005-10
@@ -145,7 +140,7 @@ static struct notifier_block cpu_nfb = {
 };
 
 /**
- * @brief calc_tinfo_first_offset
+ * @brief calculate trace info first offset
  *
  * Structure t_info used to pass MFNs to the trace buffers back to trace consumers.
  *
@@ -812,8 +807,6 @@ static inline void insert_wrap_record(struct t_buf *buf,
 
 /**
  * @brief insert lost records
- *
- *
  *
  * @param[in] buf: pointer to t_buf
  *
